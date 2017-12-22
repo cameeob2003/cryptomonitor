@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow, dialog } from 'electron'
+import { autoUpdater } from 'electron-updater'
 
 /**
  * Set `__static` path to static files in production
@@ -53,8 +54,6 @@ app.on('activate', () => {
  * support auto updating. Code Signing with a valid certificate is required.
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  */
-
-import { autoUpdater } from 'electron-updater'
 
 // lets ensure with new releases that our code is up to date
 if (process.env.NODE_ENV !== 'development') {
