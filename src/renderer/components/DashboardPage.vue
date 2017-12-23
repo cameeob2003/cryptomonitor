@@ -73,7 +73,7 @@
       <div class="col text-center">
         <small class="text-muted">
           All data is gathered from coinmarketcap.com.<br/>
-          The user is personally responsible for any trades placed based on information from this tool.<br/>
+          You (the end user) are held personally responsible for any trades you place based on information from this tool.<br/>
         </small>
       </div>
     </div>
