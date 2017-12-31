@@ -1,6 +1,6 @@
 {
   "name": "cryptomonitor",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "author": "Cameron Lockhart <cameronl.lockhart@gmail.com>",
   "description": "A simple application for monitoring crypto!",
   "license": null,

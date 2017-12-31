@@ -1,3 +1,11 @@
 body {
   background-color: #1e2124;
 }
+
+.card {
+  background-color: #24272a;
+}
+
+.card-title, .card-text {
+  color: #dddddd;
+}

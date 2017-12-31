@@ -1,14 +1,22 @@
 <template>
   <div class="container">
-    <div class="row mt-4 mb-3">
-      <div class="col">
-        <img id="logo" class="mx-auto d-block" src="~@/assets/logo.png" alt="electron-vue">
+    <div class="row mt-4 mb-1">
+      <div class="col-2">
+        <img id="logo" class="img-fluid" src="~@/assets/logo.png" alt="electron-vue">
+      </div>
+      <div class="col-10">
+        <p class="text-right text-muted">
+          <small>
+            Data updated: <b><timeago v-if="time !== ''" :since="time" :auto-update="1"></timeago></b>
+          </small>
+        </p>
       </div>
     </div>
     <div class="row">
-      <div class="col text-muted">
-        <p class="text-center">Last data update: <b><timeago v-if="time !== ''" :since="time" :auto-update="1"></timeago></b></p>
-        <p class="text-center" v-if="currencies.length">Estimated account value: <b>{{ format(getAccountValue(), 2) }}</b></p>
+      <div class="card-group">
+        <current-account-value v-bind:currentValue="accountValue"></current-account-value>
+        <highest-account-value v-bind:currentValue="accountValue" v-bind:bus="bus"></highest-account-value>
+        <account-value-diff v-bind:bus="bus" v-bind:currentAccountValue="accountValue"></account-value-diff>
       </div>
     </div>
     <div class="row mt-4">
@@ -75,20 +83,31 @@
           All data is gathered from coinmarketcap.com.<br/>
           You (the end user) are held personally responsible for any trades you place based on information from this tool.<br/>
         </small>
+        <small class="text-muted">App version: <b><i>{{ appVersion() }}</i></b></small>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import CurrentAccountValue from './CurrentAccountValue.vue'
+  import HighestAccountValue from './HighestAccountValue.vue'
+  import AccountValueDiff from './AccountValueDiff.vue'
+  import Vue from 'vue'
   const remote = require('electron').remote
   const app = remote.app
+  let bus = new Vue()
   let fs = require('fs')
   let axios = require('axios')
   let dataFolder = `${app.getPath('appData')}/cryptomonitor`
   let dataFile = `${dataFolder}/data.json`
   export default {
     name: 'Dashboard',
+    components: {
+      HighestAccountValue,
+      CurrentAccountValue,
+      AccountValueDiff
+    },
     data: function () {
       return {
         time: '',
@@ -97,17 +116,22 @@
         ownedFormAmount: 0,
         ownedCrypto: [],
         options: [],
-        error: ''
+        error: '',
+        accountValue: 0,
+        bus: bus
       }
     },
     mounted: function () {
       // load the initial set of data we will be working with
       this.refreshAvailableCurrencies()
 
-      // set an interval so that we update the data every 45 seconds (4x a minute)
-      setInterval(function () { this.refreshAvailableCurrencies() }.bind(this), 45000)
+      // set an interval so that we update the data every 60 seconds
+      setInterval(function () { this.refreshAvailableCurrencies() }.bind(this), 60000)
     },
     methods: {
+      appVersion: function () {
+        return app.getVersion()
+      },
       loadOwnedCurrency: function () {
         if (fs.existsSync(dataFile)) {
           this.ownedCrypto = JSON.parse(fs.readFileSync(dataFile, 'utf8'))
@@ -142,6 +166,8 @@
               }, [])
             }
             this.time = new Date().toISOString()
+
+            this.accountValue = this.getAccountValue()
           })
           .catch(() => { this.error = 'Unable to fetch currency list.' })
       },

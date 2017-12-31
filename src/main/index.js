@@ -1,7 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow, dialog } from 'electron'
-import { autoUpdater } from 'electron-updater'
+import { app, BrowserWindow, autoUpdater, dialog } from 'electron'
 
 /**
  * Set `__static` path to static files in production
@@ -54,10 +53,9 @@ app.on('activate', () => {
  * support auto updating. Code Signing with a valid certificate is required.
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  */
-
 // lets ensure with new releases that our code is up to date
-if (process.env.NODE_ENV !== 'development') {
-  const server = 'https://hazel-server-ikazbufcxl.now.sh'
+if (process.env.NODE_ENV === 'production') {
+  const server = 'http://192.168.99.102'
   const feed = `${server}/update/${process.platform}/${app.getVersion()}`
   autoUpdater.setFeedURL(feed)
 }
